@@ -37,7 +37,7 @@
   <h1>🌀 Writ & Reckoning Lore Builder</h1>
 
   <div class="section">
-    <h2>Step 1: Name the Core Powers & Concepts</h2>
+    <h2>Step 1: Define Core Concepts</h2>
 
     <label>Name for the high power of Chaos</label>
     <input type="text" id="ChaosPower" placeholder="Chaos">
@@ -51,55 +51,49 @@
     <label>Name for the high power of Order</label>
     <input type="text" id="OrderPower" placeholder="Virel">
 
-    <label>Name for the first authority / regulator of reality</label>
+    <label>Name for the original authority over creation</label>
     <input type="text" id="Warden" placeholder="The Warden">
 
     <label>Name for the crystalized source of possibility</label>
     <input type="text" id="Geode" placeholder="The Geode of Possibility">
 
-    <label>Name for magical objects (cards, shards, etc.)</label>
+    <label>Name for magical objects (e.g. cards, shards)</label>
     <input type="text" id="Forms" placeholder="Forms">
 
-    <label>Name for containers of power (equipment, spirits, etc.)</label>
+    <label>Name for containers of magic (e.g. items, spirits)</label>
     <input type="text" id="Vessels" placeholder="Vessels">
 
-    <label>Name for physical manifestation of magic buildup</label>
+    <label>Name for physical manifestations of magic buildup</label>
     <input type="text" id="Soulrocks" placeholder="Soulrocks">
   </div>
 
   <div class="section">
-    <h2>Step 2: World Lore</h2>
+    <h2>Step 2: Write and Customize Your Lore</h2>
 
     <label>Creation Myth</label>
     <textarea id="creationLore">
-In the age before variance, {{Warden}} kept reality carefully ordered within {{Geode}}, a star that contained every possibility. {{ChaosPower}} shattered this control, stealing fragments that would become the first {{Forms}}.
+In the age before variance, The Warden kept reality carefully ordered within the Geode of Possibility, a crystalline star that held every outcome. Chaos shattered this order, stealing fragments that would become the first Forms.
     </textarea>
     <div class="insert-button">
-      <select id="creationInsert">
-        <option value="">Insert Object...</option>
-      </select>
+      <select id="creationInsert"><option value="">Insert Object...</option></select>
       <button onclick="insertObject('creationLore', 'creationInsert')">Add Object</button>
     </div>
 
     <label>Nature of Magic</label>
     <textarea id="magicLore">
-Magic flows through {{Vessels}}, which channel {{Forms}} into the world. As power builds, {{Soulrocks}} emerge from the body — solid echoes of emotional communion with the Powers.
+Magic flows through Vessels, which channel Forms into the world. As power builds, Soulrocks emerge from the body — solid echoes of emotional communion with the Powers.
     </textarea>
     <div class="insert-button">
-      <select id="magicInsert">
-        <option value="">Insert Object...</option>
-      </select>
+      <select id="magicInsert"><option value="">Insert Object...</option></select>
       <button onclick="insertObject('magicLore', 'magicInsert')">Add Object</button>
     </div>
 
-    <label>The Rebellion of the Powers</label>
+    <label>Rebellion of the Powers</label>
     <textarea id="rebellionLore">
-When {{ChaosPower}} first rebelled, it was {{NaturePower}} who followed, and then {{EntropyPower}}, and finally {{OrderPower}}. Together they defied {{Warden}}, scattering {{Forms}} into mortal hands.
+When Chaos first rebelled, it was Sora who followed, then Karn, and finally Virel. Together they defied The Warden, scattering Forms into mortal hands.
     </textarea>
     <div class="insert-button">
-      <select id="rebellionInsert">
-        <option value="">Insert Object...</option>
-      </select>
+      <select id="rebellionInsert"><option value="">Insert Object...</option></select>
       <button onclick="insertObject('rebellionLore', 'rebellionInsert')">Add Object</button>
     </div>
   </div>
@@ -114,46 +108,48 @@ When {{ChaosPower}} first rebelled, it was {{NaturePower}} who followed, and the
       EntropyPower: "Karn",
       OrderPower: "Virel",
       Warden: "The Warden",
-      Geode: "The Geode of Possibility",
+      Geode: "the Geode of Possibility",
       Forms: "Forms",
       Vessels: "Vessels",
       Soulrocks: "Soulrocks"
     };
 
-    function getObjectLabel(id) {
-      return document.getElementById(id).value || objectMap[id];
+    function getObjectLabel(key) {
+      return document.getElementById(key).value.trim() || objectMap[key];
     }
 
     function applyObjects(text) {
       Object.keys(objectMap).forEach(key => {
-        const value = getObjectLabel(key);
-        const regex = new RegExp(`{{${key}}}`, 'g');
-        text = text.replace(regex, value);
+        const defaultTerm = objectMap[key];
+        const userTerm = getObjectLabel(key);
+        const regex = new RegExp("\\b" + escapeRegExp(defaultTerm) + "\\b", "g");
+        text = text.replace(regex, userTerm);
       });
       return text;
     }
 
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
     function insertObject(textareaId, selectId) {
       const select = document.getElementById(selectId);
-      const value = select.value;
-      if (!value) return;
-
+      const tag = select.value;
+      if (!tag) return;
       const textarea = document.getElementById(textareaId);
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const text = textarea.value;
-      const insertion = `{{${value}}}`;
-
-      textarea.value = text.slice(0, start) + insertion + text.slice(end);
+      const before = textarea.value.substring(0, start);
+      const after = textarea.value.substring(end);
+      textarea.value = before + objectMap[tag] + after;
       textarea.focus();
-      textarea.setSelectionRange(start + insertion.length, start + insertion.length);
+      textarea.setSelectionRange(start + objectMap[tag].length, start + objectMap[tag].length);
     }
 
-    // Populate dropdowns
     function populateDropdowns() {
-      const options = Object.keys(objectMap).map(key =>
-        `<option value="${key}">${objectMap[key]}</option>`
-      ).join("");
+      const options = Object.keys(objectMap)
+        .map(key => `<option value="${key}">${objectMap[key]}</option>`)
+        .join("");
       ["creationInsert", "magicInsert", "rebellionInsert"].forEach(id => {
         document.getElementById(id).innerHTML += options;
       });
