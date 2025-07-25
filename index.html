@@ -108,7 +108,6 @@ When Chaos first rebelled, it was Sora who followed, then Karn, and finally Vire
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    // Default object names (used for find/replace)
     const objectMap = {
       ChaosPower: "Chaos",
       NaturePower: "Sora",
@@ -121,19 +120,26 @@ When Chaos first rebelled, it was Sora who followed, then Karn, and finally Vire
       Soulrocks: "Soulrocks"
     };
 
-    // Saved user values
-    const currentNames = { ...objectMap };
-
-    function getUserInput(key) {
-      return document.getElementById(key).value.trim() || objectMap[key];
-    }
+    let currentNames = { ...objectMap };
 
     function saveConcepts() {
       Object.keys(objectMap).forEach(key => {
-        currentNames[key] = getUserInput(key);
+        const value = document.getElementById(key).value.trim() || objectMap[key];
+        currentNames[key] = value;
+        localStorage.setItem(`writ_${key}`, value);
       });
       document.getElementById('step1').classList.add('hidden');
       document.getElementById('step2').classList.remove('hidden');
+    }
+
+    function loadConcepts() {
+      Object.keys(objectMap).forEach(key => {
+        const stored = localStorage.getItem(`writ_${key}`);
+        const value = stored || objectMap[key];
+        currentNames[key] = value;
+        const input = document.getElementById(key);
+        if (input) input.value = stored || "";
+      });
     }
 
     function goBack() {
@@ -211,6 +217,7 @@ When Chaos first rebelled, it was Sora who followed, then Karn, and finally Vire
     }
 
     populateDropdowns();
+    loadConcepts();
   </script>
 </body>
 </html>
