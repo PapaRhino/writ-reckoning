@@ -31,12 +31,14 @@
       cursor: pointer;
     }
     button:hover { background: #666; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <h1>🌀 Writ & Reckoning Lore Builder</h1>
 
-  <div class="section">
+  <!-- Step 1: Core Concepts -->
+  <div id="step1" class="section">
     <h2>Step 1: Define Core Concepts</h2>
 
     <label>Name for the high power of Chaos</label>
@@ -65,9 +67,12 @@
 
     <label>Name for physical manifestations of magic buildup</label>
     <input type="text" id="Soulrocks" placeholder="Soulrocks">
+
+    <button onclick="saveConcepts()">💾 Save & Continue to Lore</button>
   </div>
 
-  <div class="section">
+  <!-- Step 2: Lore Writing -->
+  <div id="step2" class="section hidden">
     <h2>Step 2: Write and Customize Your Lore</h2>
 
     <label>Creation Myth</label>
@@ -96,12 +101,14 @@ When Chaos first rebelled, it was Sora who followed, then Karn, and finally Vire
       <select id="rebellionInsert"><option value="">Insert Object...</option></select>
       <button onclick="insertObject('rebellionLore', 'rebellionInsert')">Add Object</button>
     </div>
-  </div>
 
-  <button onclick="downloadPDF()">📄 Export as PDF</button>
+    <button onclick="goBack()">← Back to Concepts</button>
+    <button onclick="downloadPDF()">📄 Export as PDF</button>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
+    // Default object names (used for find/replace)
     const objectMap = {
       ChaosPower: "Chaos",
       NaturePower: "Sora",
@@ -114,14 +121,30 @@ When Chaos first rebelled, it was Sora who followed, then Karn, and finally Vire
       Soulrocks: "Soulrocks"
     };
 
-    function getObjectLabel(key) {
+    // Saved user values
+    const currentNames = { ...objectMap };
+
+    function getUserInput(key) {
       return document.getElementById(key).value.trim() || objectMap[key];
+    }
+
+    function saveConcepts() {
+      Object.keys(objectMap).forEach(key => {
+        currentNames[key] = getUserInput(key);
+      });
+      document.getElementById('step1').classList.add('hidden');
+      document.getElementById('step2').classList.remove('hidden');
+    }
+
+    function goBack() {
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
     }
 
     function applyObjects(text) {
       Object.keys(objectMap).forEach(key => {
         const defaultTerm = objectMap[key];
-        const userTerm = getObjectLabel(key);
+        const userTerm = currentNames[key];
         const regex = new RegExp("\\b" + escapeRegExp(defaultTerm) + "\\b", "g");
         text = text.replace(regex, userTerm);
       });
