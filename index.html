@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TTRPG Lore Customizer</title>
+  <style>
+    body { background: #1a1a1a; color: #eee; font-family: sans-serif; padding: 2em; }
+    .section { margin-bottom: 2em; }
+    textarea { width: 100%; height: 8em; background: #2a2a2a; color: #fff; padding: 1em; border: 1px solid #444; }
+    button { padding: 0.5em 1em; background: #444; color: #fff; border: none; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>TTRPG Lore Builder</h1>
+  <div id="loreContainer"></div>
+  <button onclick="addSection()">+ Add Custom Section</button>
+  <br><br>
+  <button onclick="downloadPDF()">Download as PDF</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const defaultLore = {
+      "Pantheon": "The Sixfold Chorus are the primary deities, each tied to a celestial body...",
+      "Magic Source": "Magic stems from ancient ley-lines that pulse beneath the earth...",
+      "Magic Buildup": "As adventurers draw upon power, magical residue builds up in their body...",
+    };
+
+    const container = document.getElementById('loreContainer');
+
+    function renderLore() {
+      container.innerHTML = '';
+      Object.entries(defaultLore).forEach(([title, text], i) => {
+        const section = document.createElement('div');
+        section.className = 'section';
+        section.innerHTML = `
+          <h3 contenteditable="true" data-index="${i}">${title}</h3>
+          <textarea>${text}</textarea>
+        `;
+        container.appendChild(section);
+      });
+    }
+
+    function addSection() {
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.innerHTML = `
+        <h3 contenteditable="true">New Section</h3>
+        <textarea>Enter your lore here...</textarea>
+      `;
+      container.appendChild(section);
+    }
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const sections = document.querySelectorAll('.section');
+
+      let y = 10;
+      sections.forEach((section, index) => {
+        const title = section.querySelector('h3').innerText;
+        const text = section.querySelector('textarea').value;
+
+        doc.setFontSize(14);
+        doc.text(title, 10, y);
+        y += 8;
+
+        doc.setFontSize(11);
+        const lines = doc.splitTextToSize(text, 180);
+        doc.text(lines, 10, y);
+        y += lines.length * 6 + 10;
+
+        if (y > 270 && index < sections.length - 1) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+
+      doc.save("custom-lore.pdf");
+    }
+
+    renderLore();
+  </script>
+</body>
+</html>
