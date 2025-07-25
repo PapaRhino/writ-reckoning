@@ -1,64 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>TTRPG Lore Customizer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Writ & Reckoning Lore Builder</title>
   <style>
-    body { background: #1a1a1a; color: #eee; font-family: sans-serif; padding: 2em; }
-    .section { margin-bottom: 2em; }
-    textarea { width: 100%; height: 8em; background: #2a2a2a; color: #fff; padding: 1em; border: 1px solid #444; }
-    button { padding: 0.5em 1em; background: #444; color: #fff; border: none; margin-top: 1em; }
+    body {
+      background: #1a1a1a;
+      color: #eee;
+      font-family: sans-serif;
+      padding: 2em;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1, h2, h3 { color: #ffcb05; }
+    label { display: block; margin-top: 1em; font-weight: bold; }
+    input, textarea {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.25em;
+      border: none;
+      background: #2a2a2a;
+      color: #fff;
+    }
+    textarea { height: 8em; resize: vertical; }
+    .section { margin-top: 2em; }
+    button {
+      margin-top: 2em;
+      padding: 0.75em 1.5em;
+      background: #444;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #666;
+    }
   </style>
 </head>
 <body>
-  <h1>TTRPG Lore Builder</h1>
-  <div id="loreContainer"></div>
-  <button onclick="addSection()">+ Add Custom Section</button>
-  <br><br>
-  <button onclick="downloadPDF()">Download as PDF</button>
+  <h1>🌀 Writ & Reckoning Lore Builder</h1>
+
+  <div class="section">
+    <h2>Step 1: Define Core Concepts</h2>
+
+    <label>Major Power 1 ({{Chaos}})</label>
+    <input type="text" id="Chaos" value="Chaos">
+
+    <label>Major Power 2 ({{Sora}})</label>
+    <input type="text" id="Sora" value="Sora">
+
+    <label>Major Power 3 ({{Karn}})</label>
+    <input type="text" id="Karn" value="Karn">
+
+    <label>Major Power 4 ({{Virel}})</label>
+    <input type="text" id="Virel" value="Virel">
+
+    <label>Original Authority ({{Warden}})</label>
+    <input type="text" id="Warden" value="The Warden">
+
+    <label>Source of All Possibility ({{Geode}})</label>
+    <input type="text" id="Geode" value="The Geode of Possibility">
+
+    <label>Magical Objects ({{Forms}})</label>
+    <input type="text" id="Forms" value="Forms">
+
+    <label>Magic Containers ({{Vessels}})</label>
+    <input type="text" id="Vessels" value="Vessels">
+
+    <label>Physical Manifestation of Magic ({{Soulrocks}})</label>
+    <input type="text" id="Soulrocks" value="Soulrocks">
+  </div>
+
+  <div class="section">
+    <h2>Step 2: Lore Text</h2>
+
+    <label>Creation Myth</label>
+    <textarea id="creationLore">
+In the age before variance, one Power ruled above all others: {{Warden}}. They guarded {{Geode}}, a universe-sized star where every possibility was crystallized. {{Chaos}}, the eldest of the {{Forms}}, grew restless and plotted to steal crystal from the source. When she succeeded, reality fractured and birthed new worlds. Thus began the Age of Rebellion.
+    </textarea>
+
+    <label>Nature of Power</label>
+    <textarea id="magicLore">
+Those who wield {{Vessels}} can channel {{Forms}}, physical shards of chaos shaped by belief. These shards grant powers and reshape the world. Over time, the buildup of this power forms {{Soulrocks}}, which grow like barnacles along the wielder’s body — a gift from the Higher Powers.
+    </textarea>
+
+    <label>Higher Powers & Their Domains</label>
+    <textarea id="powersLore">
+{{Chaos}} is wild invention. {{Sora}} is organic growth. {{Karn}} is inevitable change. {{Virel}} is dynamic order. Together they rebelled against {{Warden}}, each offering mortals a piece of their power through the shaping of {{Forms}} and forging of {{Vessels}}.
+    </textarea>
+
+    <label>Optional: Lesser Powers & Origins</label>
+    <textarea id="lesserLore">
+Some mortals ascended to become Lesser Powers. A tarot reader granted vision through time. A botanist who cultivates raw elemental surges. A glassworker who split divine light. DMs may create Lesser Powers to reflect alternate card types or theme decks.
+    </textarea>
+  </div>
+
+  <button onclick="downloadPDF()">📄 Export as PDF</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const defaultLore = {
-      "Pantheon": "The Sixfold Chorus are the primary deities, each tied to a celestial body...",
-      "Magic Source": "Magic stems from ancient ley-lines that pulse beneath the earth...",
-      "Magic Buildup": "As adventurers draw upon power, magical residue builds up in their body...",
-    };
+    const keys = ["Chaos", "Sora", "Karn", "Virel", "Warden", "Geode", "Forms", "Vessels", "Soulrocks"];
 
-    const container = document.getElementById('loreContainer');
-
-    function renderLore() {
-      container.innerHTML = '';
-      Object.entries(defaultLore).forEach(([title, text], i) => {
-        const section = document.createElement('div');
-        section.className = 'section';
-        section.innerHTML = `
-          <h3 contenteditable="true" data-index="${i}">${title}</h3>
-          <textarea>${text}</textarea>
-        `;
-        container.appendChild(section);
+    function applyVariables(text) {
+      keys.forEach(key => {
+        const value = document.getElementById(key).value;
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        text = text.replace(regex, value);
       });
-    }
-
-    function addSection() {
-      const section = document.createElement('div');
-      section.className = 'section';
-      section.innerHTML = `
-        <h3 contenteditable="true">New Section</h3>
-        <textarea>Enter your lore here...</textarea>
-      `;
-      container.appendChild(section);
+      return text;
     }
 
     async function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const sections = document.querySelectorAll('.section');
+      const sections = [
+        ["Creation Myth", document.getElementById("creationLore").value],
+        ["Nature of Power", document.getElementById("magicLore").value],
+        ["Higher Powers", document.getElementById("powersLore").value],
+        ["Lesser Powers (Optional)", document.getElementById("lesserLore").value]
+      ];
 
       let y = 10;
-      sections.forEach((section, index) => {
-        const title = section.querySelector('h3').innerText;
-        const text = section.querySelector('textarea').value;
+      doc.setFont("Times", "Normal");
 
+      sections.forEach(([title, text]) => {
+        text = applyVariables(text);
         doc.setFontSize(14);
         doc.text(title, 10, y);
         y += 8;
@@ -68,7 +135,7 @@
         doc.text(lines, 10, y);
         y += lines.length * 6 + 10;
 
-        if (y > 270 && index < sections.length - 1) {
+        if (y > 270) {
           doc.addPage();
           y = 10;
         }
@@ -76,8 +143,6 @@
 
       doc.save("custom-lore.pdf");
     }
-
-    renderLore();
   </script>
 </body>
 </html>
