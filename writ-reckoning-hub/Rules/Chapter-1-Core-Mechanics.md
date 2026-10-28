@@ -100,7 +100,55 @@ Craft is a simple and complicated measure.  It is simply put, an understanding o
 
 Essence is a measure of connection.  Since the natural world grows around you with or without your meddling, essence measures a character’s connection to all other life.  Including the spirits within the elemental forces that create the reality and world you live in.
 
-TABLE
+**Common Uses for Different Stat Skill checks**
+
+| Action | Relevant Stat |
+| --- | --- |
+| Jumping | Might |
+| Climbing | Finesse |
+| Dodging (non-combat) | Finesse |
+| domesticate animal | Essence |
+| domesticate monster | Command |
+| handle wild creature | Essence |
+| interpret sigil | Imagination |
+| magical device | Imagination |
+| spell knowledge | Imagination |
+| spell modification | Imagination |
+| magic creature | Imagination / Essence |
+| magic history | Imagination |
+| vessel / form knowledge | Imagination |
+| running | Might |
+| unarmed attacks | Might |
+| disguise | Craft |
+| lying | Command |
+| sleight of hand | Finesse |
+| political history | Command |
+| natural history | Essence |
+| read emotions | Command |
+| intimidation | Command / Might |
+| searching for an item | Craft |
+| tracking creature | Essence |
+| tracking person | Essence |
+| tracking monster | Essence / Imagination |
+| healing (non-magical) | Craft |
+| healing (magical) | Imagination |
+| plant identification | Essence |
+| tracking | Essence |
+| navigation | Imagination / Essence |
+| situational awareness | Command |
+| social awareness | Command |
+| magical awareness | Imagination |
+| alertness | Might |
+| performance of arts | Finesse |
+| negotiation | Command |
+| religious history | Imagination |
+| affinity sensing | (not specified in source) |
+| hiding | Finesse |
+| sneaking | Finesse |
+| navigation | Essence |
+| picking a lock | Finesse |
+
+*(Duplicates and the blank affinity-sensing entry are as written in the source.)*
 
 ### Health
 
@@ -400,7 +448,14 @@ Essence Cards are unique in that they usually either have a basic version or an 
 
 Some cards won’t fit neatly into a tier based on numbers alone. This reference table provides general rulings for common effects:
 
-TABLE
+| Card Effect | How to Interpret It | Notes |
+| --- | --- | --- |
+| Draw a Card | Usually means gain 1 AP. | Drawing multiple cards grants additional AP (e.g., "Draw 2 cards" = gain 2 AP). |
+| Offensive Buffs | Can be applied in one of two ways: +1 to the attack roll OR +1 to damage. | Let players choose how they apply buffs, but remind them a +1 to hit does not guarantee success. |
+| Defensive Buffs | Can be +1 to DEF, Damage Reduction, or Temporary HP. | Temporary HP is usually the most balanced ruling. |
+| Poison | Recurring damage at the start of the target's turn. | Usually 1 damage per round unless otherwise stated. |
+| Confusion | Target has a harder time hitting their desired target. | Roll at disadvantage or reroll failed attacks. |
+| Sleep / Stun | Target misses turns or loses AP. | Allow a roll each round to break free. |
 
 ## Soulrocks
 
@@ -420,11 +475,22 @@ Gained soulrocks are stored in your stats (see character sheet).  They are repre
 
 Soulrocks can be spent to upgrade almost all aspects of a player’s character.  Everything from max health, card slots, card tier, etc.  See the soulrock table below to determine how much a certain upgrade would cost.
 
-TABLE
+| Aspect | Cost |
+| --- | --- |
+| Max Hp | 2 SR / 1 HP |
+| Card Pool | 5 SR / 1 Card Slot |
+| dice pool max | 4 SR / 1 Point |
+| Feats + Abilities | 9 SR / 1 Ability |
+| Adjective Upgrades | 9 SR / 1 Adjective |
+| upgrading card | 3 SR x Max Card Tier |
+| upgrading Unstable forms | 3 SR x Max Card Tier |
 
 Some aspects scale in cost with each upgrade:
 
-TABLE
+|  | 1st Upgrade | 2nd Upgrade | 3rd Upgrade | 4th Upgrade |
+| --- | --- | --- | --- | --- |
+| upgrade Def Style | 5 SR | 9 SR | 12 SR | 15 SR |
+| Card Tier MAX | 5 SR | 9 SR | 12 SR | 15 SR |
 
 ## Character Growth
 
@@ -510,7 +576,22 @@ Some wounds may reduce Core Stats.
 
 - A Player Can Choose to Die – If a player feels their story has reached a natural conclusion, they may choose to die instead of taking the Bargain. This is their choice, not the DM’s.
 
-TABLE
+| d12 roll | Consequence | Effect |
+| --- | --- | --- |
+| 1 | Coma | Fall into a coma for 1d6 hours. This coma may be broken by healing or medicinal treatment but is extremely difficult |
+| 2 | Severe Mobility Loss | Lose both legs. Must acquire a wheelchair, mount, or magical movement aid. |
+| 3 | Major Sensory Loss | Lose both eyes. Must rely on a familiar or allies to navigate. |
+| 4 | Dominant Arm Lost | Attacks and physical actions requiring two hands suffer -1 AP increase. |
+| 5 | One Eye Lost | Slight perception loss, disadvantage on long-range attacks. |
+| 6 | Nerve Damage | -1 to Craft (fine motor skills impaired). |
+| 7 | Large Magical Scar | Purely aesthetic, but glows faintly with chaos energy. |
+| 8 | Weakened Essence Flow | -1 to Essence (casting magic feels strained). |
+| 9 | Fractured Psyche | -1 to Arcane (understanding complex magic is harder). |
+| 10 | Unstable Connection | Using Summoned Allies costs +1 AP for the next three sessions. |
+| 11 | Unwanted Mutation | A chaotic physical change (extra fingers, glowing veins, a voice that echoes unnaturally). |
+| 12 | Strange Resilience | The player avoids major damage but permanently gains a supernatural quirk (e.g., they never sleep, can't drink water, learns a new language) |
+
+*(Editor's note, not a rule: "Arcane" is not one of the six WR stats — row 9 likely means Imagination, which covers understanding complex magic. Kept verbatim above; GM decides.)*
 
 ## Combat
 
