@@ -1,1 +1,148 @@
-{"blocks":[{"conditioned":false,"id":"wr-name","properties":["name"],"size":1,"type":"heading"},{"conditioned":true,"display":"Defense","id":"wr-defense","properties":["defense"],"type":"property"},{"conditioned":true,"display":"Health","id":"wr-health","properties":["health"],"type":"property"},{"conditioned":true,"display":"Health Dice","id":"wr-health-dice","properties":["health_dice"],"type":"property"},{"conditioned":true,"display":"Card Pool","id":"wr-card-pool","properties":["card_pool"],"type":"property"},{"conditioned":true,"id":"wr-attributes","nested":[{"conditioned":true,"display":"Command","id":"wr-command","properties":["command"],"type":"property"},{"conditioned":true,"display":"Imagination","id":"wr-imagination","properties":["imagination"],"type":"property"},{"conditioned":true,"display":"Might","id":"wr-might","properties":["might"],"type":"property"},{"conditioned":true,"display":"Finesse","id":"wr-finesse","properties":["finesse"],"type":"property"},{"conditioned":true,"display":"Craft","id":"wr-craft","properties":["craft"],"type":"property"},{"conditioned":true,"display":"Essence","id":"wr-essence","properties":["essence"],"type":"property"}],"properties":["command","imagination","might","finesse","craft","essence"],"type":"group"},{"conditioned":true,"display":"Vessel","id":"wr-vessel","properties":["vessel"],"type":"property"},{"conditioned":true,"display":"Affinity","id":"wr-affinity","properties":["affinity"],"type":"property"},{"conditioned":true,"heading":"Abilities","id":"wr-traits","markdown":true,"properties":["traits"],"type":"traits"}],"id":"writ-and-reckoning-layout","name":"Writ & Reckoning Layout"}
+{
+  "blocks": [
+    {
+      "conditioned": false,
+      "id": "wr-name",
+      "properties": [
+        "name"
+      ],
+      "size": 1,
+      "type": "heading"
+    },
+    {
+      "conditioned": true,
+      "display": "Defense",
+      "id": "wr-defense",
+      "properties": [
+        "defense"
+      ],
+      "type": "property"
+    },
+    {
+      "conditioned": true,
+      "display": "Health",
+      "id": "wr-health",
+      "properties": [
+        "health"
+      ],
+      "type": "property"
+    },
+    {
+      "conditioned": true,
+      "display": "Health Dice",
+      "id": "wr-health-dice",
+      "properties": [
+        "health_dice"
+      ],
+      "type": "property"
+    },
+    {
+      "conditioned": true,
+      "display": "Card Pool",
+      "id": "wr-card-pool",
+      "properties": [
+        "card_pool"
+      ],
+      "type": "property"
+    },
+    {
+      "conditioned": true,
+      "id": "wr-attributes",
+      "nested": [
+        {
+          "conditioned": true,
+          "display": "Command",
+          "id": "wr-command",
+          "properties": [
+            "command"
+          ],
+          "type": "property"
+        },
+        {
+          "conditioned": true,
+          "display": "Imagination",
+          "id": "wr-imagination",
+          "properties": [
+            "imagination"
+          ],
+          "type": "property"
+        },
+        {
+          "conditioned": true,
+          "display": "Might",
+          "id": "wr-might",
+          "properties": [
+            "might"
+          ],
+          "type": "property"
+        },
+        {
+          "conditioned": true,
+          "display": "Finesse",
+          "id": "wr-finesse",
+          "properties": [
+            "finesse"
+          ],
+          "type": "property"
+        },
+        {
+          "conditioned": true,
+          "display": "Craft",
+          "id": "wr-craft",
+          "properties": [
+            "craft"
+          ],
+          "type": "property"
+        },
+        {
+          "conditioned": true,
+          "display": "Essence",
+          "id": "wr-essence",
+          "properties": [
+            "essence"
+          ],
+          "type": "property"
+        }
+      ],
+      "properties": [
+        "command",
+        "imagination",
+        "might",
+        "finesse",
+        "craft",
+        "essence"
+      ],
+      "type": "group"
+    },
+    {
+      "conditioned": true,
+      "display": "Vessel",
+      "id": "wr-vessel",
+      "properties": [
+        "vessel"
+      ],
+      "type": "property"
+    },
+    {
+      "conditioned": true,
+      "display": "Affinity",
+      "id": "wr-affinity",
+      "properties": [
+        "affinity"
+      ],
+      "type": "property"
+    },
+    {
+      "conditioned": true,
+      "heading": "Abilities",
+      "id": "wr-traits",
+      "markdown": true,
+      "properties": [
+        "traits"
+      ],
+      "type": "traits"
+    }
+  ],
+  "id": "writ-and-reckoning-layout",
+  "name": "Writ & Reckoning Layout"
+}
