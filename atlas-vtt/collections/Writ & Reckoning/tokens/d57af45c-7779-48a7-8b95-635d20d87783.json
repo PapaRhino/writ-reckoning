@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Willa Bramble",
+    "imagePath": "atlas-vtt/assets/Willa_Bramble_1793201820002_5yktyr.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "pc",
+      "healer"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "d57af45c-7779-48a7-8b95-635d20d87783",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}

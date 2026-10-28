@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Hedda",
+    "imagePath": "atlas-vtt/assets/Hedda_1793201820002_c9j4gr.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "npc",
+      "ally"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "fbbd919b-7919-4acc-9755-f693a2460d72",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Tamsin",
+    "imagePath": "atlas-vtt/assets/Tamsin_1793201820002_umpfpk.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "npc",
+      "support"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "1ae12ea6-7620-486b-8907-7e57fae4a261",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}

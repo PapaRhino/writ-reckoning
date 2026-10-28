@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Luz Ortega",
+    "imagePath": "atlas-vtt/assets/Luz_Ortega_1793201820002_ianmgt.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "pc",
+      "scholar"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "808f8493-8a7a-4ee8-b205-c0e423ab27df",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}

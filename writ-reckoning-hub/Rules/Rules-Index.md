@@ -5,6 +5,7 @@ Imported from the Writ & Reckoning Official Sourcebook V2.2 (October 2025). Text
 ## Sourcebook
 
 - [[Sourcebook]] — title page, author, and copyright notice.
+- [[Reconciliation-Note]] — Google Doc vs. attached .docx diff: same prose; the .docx only added 5 tables (now restored into Chapter 1).
 - [[Preface-Using-this-System]] — what you need (no cards required, GM + at least 1 player, groups of around 4–7); lore is marked in green and mechanics can be lore-agnostic.
 
 ## Core resolution

@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Tomas Vidal",
+    "imagePath": "atlas-vtt/assets/Tomas_Vidal_1793201820002_me6oed.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "pc",
+      "fighter"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "763dfe86-168e-427d-b868-deed96585893",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}

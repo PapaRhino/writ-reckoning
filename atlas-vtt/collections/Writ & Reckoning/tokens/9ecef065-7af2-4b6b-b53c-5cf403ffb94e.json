@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Corvin Ash",
+    "imagePath": "atlas-vtt/assets/Corvin_Ash_1793201820002_gh2plf.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "npc",
+      "villain"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "9ecef065-7af2-4b6b-b53c-5cf403ffb94e",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}

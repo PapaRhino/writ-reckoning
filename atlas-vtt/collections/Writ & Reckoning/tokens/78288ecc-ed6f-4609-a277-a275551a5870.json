@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Jory Fenwick",
+    "imagePath": "atlas-vtt/assets/Jory_Fenwick_1793201820002_l4lwgk.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "pc",
+      "scout"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "78288ecc-ed6f-4609-a277-a275551a5870",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}
