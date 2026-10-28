@@ -1,0 +1,15 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "type": "token",
+    "showRing": true,
+    "name": "Lilligant Villian",
+    "imagePath": "atlas-vtt/assets/Lilligant_Villian_1793198089971_mj8yhg.webp",
+    "collection": "Writ & Reckoning",
+    "tags": [],
+    "thumbnailPath": "atlas-vtt/assets/thumbnails/Lilligant_Villian_1793198089971_mj8yhg-3d3a5a75.webp",
+    "id": "token-1793198089983-5z3zcg",
+    "createdAt": 1793198089983,
+    "modifiedAt": 1793198089983
+  }
+}

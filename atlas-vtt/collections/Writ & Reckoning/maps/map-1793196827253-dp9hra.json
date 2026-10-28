@@ -1,0 +1,21 @@
+{
+  "id": "map-1793196827253-dp9hra",
+  "name": "World map with roads",
+  "mapFilePath": "atlas-vtt/assets/5933337e_5135_48cc_8edd_9f658254d27f_1793196827237_kj8buj.jpg",
+  "tags": [],
+  "collection": "Writ & Reckoning",
+  "createdAt": 1793196827253,
+  "modifiedAt": 1793196894728,
+  "atlasRecord": {
+    "format": 1,
+    "type": "map",
+    "name": "World map with roads",
+    "mapFilePath": "atlas-vtt/assets/5933337e_5135_48cc_8edd_9f658254d27f_1793196827237_kj8buj.jpg",
+    "collection": "Writ & Reckoning",
+    "tags": [],
+    "thumbnailPath": "atlas-vtt/assets/thumbnails/5933337e_5135_48cc_8edd_9f658254d27f_1793196827237_kj8buj-40e9b5f3.webp",
+    "id": "map-1793196827253-dp9hra",
+    "createdAt": 1793196827253,
+    "modifiedAt": 1793196894728
+  }
+}

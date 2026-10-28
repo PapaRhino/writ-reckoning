@@ -1,0 +1,96 @@
+{
+  "format": 1,
+  "uid": "8074713e-9a70-4c0f-a8a0-3b9300bbcdb8",
+  "version": 1,
+  "tags": {},
+  "settings": {
+    "conditions": [
+      {
+        "id": "d64c9a9e-9375-4f78-a9f8-a7e0a77721a5",
+        "name": "Blinded",
+        "color": "#7579f0",
+        "effect": "blinded"
+      },
+      {
+        "id": "9718688e-7646-4faf-ad4d-6da95ae2e63b",
+        "name": "Invisible",
+        "color": "#e6ad33",
+        "effect": "invisible"
+      },
+      {
+        "id": "8c4cf80e-678a-4113-9d69-5e1c7fcfc513",
+        "name": "Hidden",
+        "color": "#a6272b",
+        "effect": "undetected"
+      }
+    ],
+    "gridDefaults": {
+      "unitType": "units",
+      "unitDistance": 1,
+      "measurementMode": "abstract",
+      "abstractRangeBands": [
+        {
+          "name": "Melee",
+          "maxSquares": 1
+        },
+        {
+          "name": "Close",
+          "maxSquares": 2
+        },
+        {
+          "name": "Medium",
+          "maxSquares": 3
+        },
+        {
+          "name": "Far",
+          "maxSquares": 4
+        }
+      ],
+      "diagonalRule": "equidistant",
+      "difficultTerrain": "double"
+    },
+    "defaultWidgets": {
+      "hpBar": true,
+      "stressBar": false,
+      "initiativeTracker": true
+    },
+    "dice": {
+      "defaultRoll": "1d20",
+      "crit": "natural"
+    },
+    "resources": [
+      {
+        "key": "hp",
+        "name": "HP",
+        "field": "hp",
+        "direction": "drains",
+        "color": "#22c55e",
+        "defeatedWhenSpent": true,
+        "visibleToPlayers": false,
+        "slot": 0
+      },
+      {
+        "key": "action-points",
+        "name": "Action Points",
+        "field": "ap",
+        "direction": "drains",
+        "color": "#06b6d4",
+        "visibleToPlayers": false,
+        "slot": 1
+      },
+      {
+        "key": "defense",
+        "name": "Defense",
+        "field": "defense",
+        "direction": "static",
+        "color": "#94a3b8",
+        "visibleToPlayers": false,
+        "slot": 2
+      }
+    ],
+    "systemPresetId": "b3a2fa75-155c-46f2-9530-0f90ba8a84b1"
+  },
+  "createdAt": 1793196480301,
+  "modifiedAt": 1793196982245,
+  "publisherId": "2b95c21f-18f4-45ab-ae57-9bc715bcf9eb"
+}
