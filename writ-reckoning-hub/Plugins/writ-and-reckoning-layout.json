@@ -112,7 +112,7 @@
         "craft",
         "essence"
       ],
-      "type": "group"
+      "type": "inline"
     },
     {
       "conditioned": true,
