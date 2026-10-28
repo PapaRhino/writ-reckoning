@@ -15,6 +15,12 @@ interface CardResult {
 	detail: string;
 	// TCGdex only: full-card fetch id (needed for set name on import).
 	tcgdexId?: string;
+	// Statblock source data (populated per game; all optional — the fence
+	// builder omits anything missing, so a thin source still yields a fence).
+	typeLine?: string;
+	rulesText?: string;
+	health?: number;
+	powerText?: string;
 }
 
 interface CreatureResult {
@@ -73,6 +79,38 @@ function imageExtension(url: string): string {
 	return ext === "jpeg" ? "jpg" : ext;
 }
 
+/** YAML-safe double-quoted scalar (JSON quoting is valid YAML here). */
+function yamlStr(s: string): string {
+	return JSON.stringify(s);
+}
+
+/**
+ * A Fantasy Statblocks fence for an imported card/creature. Uses only
+ * WR-layout fields (name, health, traits) so it renders under the Writ &
+ * Reckoning layout with no layout line needed; anything missing is omitted
+ * (conditioned blocks hide). This is what makes an import a potential
+ * statblock instead of just a reference note: the note now carries a real
+ * statblock the Bestiary can pick up and Reading view renders.
+ */
+function statblockFence(
+	name: string,
+	health: number | undefined,
+	traits: { name: string; desc: string }[]
+): string {
+	const lines = ["```statblock", `name: ${yamlStr(name)}`];
+	if (health !== undefined) lines.push(`health: ${health}`);
+	const kept = traits.filter((t) => t.name !== "");
+	if (kept.length > 0) {
+		lines.push("traits:");
+		for (const t of kept) {
+			lines.push(`  - name: ${yamlStr(t.name)}`);
+			lines.push(`    desc: ${yamlStr(t.desc)}`);
+		}
+	}
+	lines.push("```");
+	return lines.join("\n");
+}
+
 // ---------------------------------------------------------------------------
 // Card sources
 // ---------------------------------------------------------------------------
@@ -84,13 +122,31 @@ async function searchScryfall(query: string): Promise<CardResult[]> {
 	if (!json.data) return [];
 	return json.data.slice(0, 20).map((c) => {
 		const images = c.image_uris as { small?: string; normal?: string } | undefined;
+		// Double-faced cards carry text on faces, not top level.
+		const faces = c.card_faces as Record<string, unknown>[] | undefined;
+		const face = faces?.[0] ?? {};
+		const typeLine = String(c.type_line ?? face.type_line ?? "");
+		const oracleText = String(c.oracle_text ?? face.oracle_text ?? "");
+		const power = c.power ?? face.power;
+		const toughness = c.toughness ?? face.toughness;
+		const toughNum =
+			typeof toughness === "string" && /^\d+$/.test(toughness)
+				? parseInt(toughness, 10)
+				: undefined;
 		return {
 			name: String(c.name ?? "Unknown"),
 			set: String(c.set_name ?? ""),
 			imageSmall: images?.small ?? "",
 			imageLarge: images?.normal ?? images?.small ?? "",
 			game: "mtg" as Game,
-			detail: `${c.set_name ?? ""} — ${c.type_line ?? ""}`,
+			detail: `${c.set_name ?? ""} — ${typeLine}`,
+			typeLine,
+			rulesText: oracleText,
+			health: toughNum,
+			powerText:
+				typeof power === "string" && typeof toughness === "string"
+					? `${power}/${toughness}`
+					: undefined,
 		};
 	});
 }
@@ -126,13 +182,51 @@ async function searchTcgdex(query: string): Promise<CardResult[]> {
 		}));
 }
 
-async function fetchTcgdexCard(id: string): Promise<{ name: string; setName: string; image: string }> {
+async function fetchTcgdexCard(id: string): Promise<{
+	name: string;
+	setName: string;
+	image: string;
+	hp?: number;
+	types?: string[];
+	attacks?: { name: string; desc: string }[];
+	abilities?: { name: string; desc: string }[];
+}> {
 	const res = await requestUrl({ url: `https://api.tcgdex.net/v2/en/cards/${id}` });
-	const json = res.json as { name?: string; image?: string; set?: { name?: string } };
+	const json = res.json as {
+		name?: string;
+		image?: string;
+		set?: { name?: string };
+		hp?: number | string;
+		types?: string[];
+		attacks?: { cost?: string[]; name?: string; damage?: string | number; effect?: string }[];
+		abilities?: { type?: string; name?: string; effect?: string }[];
+	};
+	const hpNum =
+		typeof json.hp === "number"
+			? json.hp
+			: typeof json.hp === "string" && /^\d+$/.test(json.hp)
+				? parseInt(json.hp, 10)
+				: undefined;
 	return {
 		name: String(json.name ?? ""),
 		setName: json.set?.name ?? "",
 		image: String(json.image ?? ""),
+		hp: hpNum,
+		types: json.types ?? [],
+		attacks: (json.attacks ?? []).map((a) => ({
+			name: String(a.name ?? "Attack"),
+			desc: [
+				(a.cost ?? []).join(", "),
+				a.damage !== undefined && a.damage !== "" ? String(a.damage) : "",
+				String(a.effect ?? ""),
+			]
+				.filter(Boolean)
+				.join(" — "),
+		})),
+		abilities: (json.abilities ?? []).map((a) => ({
+			name: String(a.name ?? "Ability"),
+			desc: String(a.effect ?? ""),
+		})),
 	};
 }
 
@@ -153,6 +247,10 @@ async function searchYgo(query: string): Promise<CardResult[]> {
 			imageLarge: images?.[0]?.image_url ?? images?.[0]?.image_url_small ?? "",
 			game: "ygo" as Game,
 			detail: `${c.type ?? ""} — ${c.race ?? ""}`,
+			typeLine: `${c.type ?? ""} — ${c.race ?? ""}`,
+			rulesText: String(c.desc ?? ""),
+			health: typeof c.def === "number" ? c.def : undefined,
+			powerText: typeof c.atk === "number" ? `ATK ${c.atk}` : undefined,
 		};
 	});
 }
@@ -191,6 +289,8 @@ interface PokeapiDetail {
 	types: string[];
 	height: number;
 	weight: number;
+	hp?: number;
+	abilities?: { name: string; hidden: boolean }[];
 }
 
 async function fetchPokeapiDetail(name: string): Promise<PokeapiDetail> {
@@ -204,6 +304,8 @@ async function fetchPokeapiDetail(name: string): Promise<PokeapiDetail> {
 			other?: Record<string, { front_default?: string | null }>;
 		};
 		types?: { type?: { name?: string } }[];
+		stats?: { base_stat?: number; stat?: { name?: string } }[];
+		abilities?: { ability?: { name?: string }; is_hidden?: boolean }[];
 	};
 	const other = json.sprites?.other ?? {};
 	const artwork = other["official-artwork"]?.front_default ?? null;
@@ -214,6 +316,13 @@ async function fetchPokeapiDetail(name: string): Promise<PokeapiDetail> {
 		types: (json.types ?? []).map((t) => t.type?.name ?? "").filter(Boolean),
 		height: json.height ?? 0,
 		weight: json.weight ?? 0,
+		hp: (json.stats ?? []).find((s) => s.stat?.name === "hp")?.base_stat,
+		abilities: (json.abilities ?? [])
+			.map((a) => ({
+				name: capitalize(String(a.ability?.name ?? "")),
+				hidden: a.is_hidden ?? false,
+			}))
+			.filter((a) => a.name !== ""),
 	};
 }
 
@@ -499,10 +608,11 @@ export default class TcgCardImporterPlugin extends Plugin {
 		// TCGdex briefs carry no set name — fetch the full card on import.
 		let setName = card.set;
 		let imageLarge = card.imageLarge;
+		let ptcgFull: Awaited<ReturnType<typeof fetchTcgdexCard>> | undefined;
 		if (card.game === "ptcg" && card.tcgdexId) {
-			const full = await fetchTcgdexCard(card.tcgdexId);
-			setName = full.setName;
-			if (full.image) imageLarge = `${full.image}/high.png`;
+			ptcgFull = await fetchTcgdexCard(card.tcgdexId);
+			setName = ptcgFull.setName;
+			if (ptcgFull.image) imageLarge = `${ptcgFull.image}/high.png`;
 		}
 
 		const imagePath = await this.saveImageAndToken(
@@ -512,9 +622,34 @@ export default class TcgCardImporterPlugin extends Plugin {
 			`${card.game}-${safeName}`
 		);
 
+		// Statblock fence: traits/health per game, from the source data.
+		let fenceHealth = card.health;
+		let fenceTraits: { name: string; desc: string }[] = [];
+		if (card.game === "mtg" || card.game === "ygo") {
+			if (card.typeLine || card.rulesText) {
+				fenceTraits.push({ name: card.typeLine ?? "Card", desc: card.rulesText ?? "" });
+			}
+			if (card.powerText) {
+				fenceTraits.push({
+					name: card.game === "mtg" ? "Power / Toughness" : "Attack",
+					desc: card.powerText,
+				});
+			}
+		} else if (ptcgFull) {
+			fenceHealth = ptcgFull.hp;
+			fenceTraits = [
+				...(ptcgFull.attacks ?? []),
+				...(ptcgFull.abilities ?? []),
+				...(ptcgFull.types && ptcgFull.types.length > 0
+					? [{ name: "Types", desc: ptcgFull.types.join(", ") }]
+					: []),
+			];
+		}
+		const fence = statblockFence(card.name, fenceHealth, fenceTraits);
+
 		await ensureFolder(this.app, `${cardsFolder}/${gameFolder}`);
 		const notePath = `${cardsFolder}/${gameFolder}/${safeName}.md`;
-		const noteBody = `---\ngame: ${card.game}\nset: "${setName.replace(/"/g, "")}"\nimage: "[[${imagePath}]]"\n---\n\n# ${card.name}\n\n![[${imagePath}]]\n\n- **Game:** ${GAME_LABELS[card.game]}\n- **Set:** ${setName}\n- **Detail:** ${card.detail}\n`;
+		const noteBody = `---\ngame: ${card.game}\nset: "${setName.replace(/"/g, "")}"\nimage: "[[${imagePath}]]"\n---\n\n# ${card.name}\n\n![[${imagePath}]]\n\n- **Game:** ${GAME_LABELS[card.game]}\n- **Set:** ${setName}\n- **Detail:** ${card.detail}\n\n## Statblock\n\n${fence}\n`;
 		if (!this.app.vault.getAbstractFileByPath(notePath)) {
 			await this.app.vault.create(notePath, noteBody);
 		}
@@ -534,7 +669,20 @@ export default class TcgCardImporterPlugin extends Plugin {
 		await ensureFolder(this.app, creatureFolder);
 		const safeName = sanitizeFileName(detail.name);
 		const notePath = `${creatureFolder}/${safeName}.md`;
-		const noteBody = `---\ngame: pokemon-creature\ntypes: [${detail.types.join(", ")}]\nimage: "[[${imagePath}]]"\n---\n\n# ${detail.name}\n\n![[${imagePath}]]\n\n- **Types:** ${detail.types.join(", ") || "—"}\n- **Height:** ${detail.height} dm\n- **Weight:** ${detail.weight} hg\n- **Source:** PokéAPI\n`;
+		const fenceTraits: { name: string; desc: string }[] = [];
+		if (detail.types.length > 0) {
+			fenceTraits.push({ name: "Types", desc: detail.types.join(", ") });
+		}
+		if (detail.abilities && detail.abilities.length > 0) {
+			fenceTraits.push({
+				name: "Abilities",
+				desc: detail.abilities
+					.map((a) => (a.hidden ? `${a.name} (Hidden)` : a.name))
+					.join(", "),
+			});
+		}
+		const fence = statblockFence(detail.name, detail.hp, fenceTraits);
+		const noteBody = `---\ngame: pokemon-creature\ntypes: [${detail.types.join(", ")}]\nimage: "[[${imagePath}]]"\n---\n\n# ${detail.name}\n\n![[${imagePath}]]\n\n- **Types:** ${detail.types.join(", ") || "—"}\n- **Height:** ${detail.height} dm\n- **Weight:** ${detail.weight} hg\n- **Source:** PokéAPI\n\n## Statblock\n\n${fence}\n`;
 		if (!this.app.vault.getAbstractFileByPath(notePath)) {
 			await this.app.vault.create(notePath, noteBody);
 		}
