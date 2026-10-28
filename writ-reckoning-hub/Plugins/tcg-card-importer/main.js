@@ -59,6 +59,24 @@ function imageExtension(url) {
   const ext = m[1].toLowerCase();
   return ext === "jpeg" ? "jpg" : ext;
 }
+function yamlStr(s) {
+  return JSON.stringify(s);
+}
+function statblockFence(name, health, traits) {
+  const lines = ["```statblock", `name: ${yamlStr(name)}`];
+  if (health !== void 0)
+    lines.push(`health: ${health}`);
+  const kept = traits.filter((t) => t.name !== "");
+  if (kept.length > 0) {
+    lines.push("traits:");
+    for (const t of kept) {
+      lines.push(`  - name: ${yamlStr(t.name)}`);
+      lines.push(`    desc: ${yamlStr(t.desc)}`);
+    }
+  }
+  lines.push("```");
+  return lines.join("\n");
+}
 async function searchScryfall(query) {
   const url = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(`name:${query}`)}&unique=prints`;
   const res = await (0, import_obsidian.requestUrl)({ url });
@@ -66,15 +84,26 @@ async function searchScryfall(query) {
   if (!json.data)
     return [];
   return json.data.slice(0, 20).map((c) => {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
     const images = c.image_uris;
+    const faces = c.card_faces;
+    const face = (_a = faces == null ? void 0 : faces[0]) != null ? _a : {};
+    const typeLine = String((_c = (_b = c.type_line) != null ? _b : face.type_line) != null ? _c : "");
+    const oracleText = String((_e = (_d = c.oracle_text) != null ? _d : face.oracle_text) != null ? _e : "");
+    const power = (_f = c.power) != null ? _f : face.power;
+    const toughness = (_g = c.toughness) != null ? _g : face.toughness;
+    const toughNum = typeof toughness === "string" && /^\d+$/.test(toughness) ? parseInt(toughness, 10) : void 0;
     return {
-      name: String((_a = c.name) != null ? _a : "Unknown"),
-      set: String((_b = c.set_name) != null ? _b : ""),
-      imageSmall: (_c = images == null ? void 0 : images.small) != null ? _c : "",
-      imageLarge: (_e = (_d = images == null ? void 0 : images.normal) != null ? _d : images == null ? void 0 : images.small) != null ? _e : "",
+      name: String((_h = c.name) != null ? _h : "Unknown"),
+      set: String((_i = c.set_name) != null ? _i : ""),
+      imageSmall: (_j = images == null ? void 0 : images.small) != null ? _j : "",
+      imageLarge: (_l = (_k = images == null ? void 0 : images.normal) != null ? _k : images == null ? void 0 : images.small) != null ? _l : "",
       game: "mtg",
-      detail: `${(_f = c.set_name) != null ? _f : ""} \u2014 ${(_g = c.type_line) != null ? _g : ""}`
+      detail: `${(_m = c.set_name) != null ? _m : ""} \u2014 ${typeLine}`,
+      typeLine,
+      rulesText: oracleText,
+      health: toughNum,
+      powerText: typeof power === "string" && typeof toughness === "string" ? `${power}/${toughness}` : void 0
     };
   });
 }
@@ -98,13 +127,34 @@ async function searchTcgdex(query) {
   }));
 }
 async function fetchTcgdexCard(id) {
-  var _a, _b, _c, _d;
+  var _a, _b, _c, _d, _e, _f, _g;
   const res = await (0, import_obsidian.requestUrl)({ url: `https://api.tcgdex.net/v2/en/cards/${id}` });
   const json = res.json;
+  const hpNum = typeof json.hp === "number" ? json.hp : typeof json.hp === "string" && /^\d+$/.test(json.hp) ? parseInt(json.hp, 10) : void 0;
   return {
     name: String((_a = json.name) != null ? _a : ""),
     setName: (_c = (_b = json.set) == null ? void 0 : _b.name) != null ? _c : "",
-    image: String((_d = json.image) != null ? _d : "")
+    image: String((_d = json.image) != null ? _d : ""),
+    hp: hpNum,
+    types: (_e = json.types) != null ? _e : [],
+    attacks: ((_f = json.attacks) != null ? _f : []).map((a) => {
+      var _a2, _b2, _c2;
+      return {
+        name: String((_a2 = a.name) != null ? _a2 : "Attack"),
+        desc: [
+          ((_b2 = a.cost) != null ? _b2 : []).join(", "),
+          a.damage !== void 0 && a.damage !== "" ? String(a.damage) : "",
+          String((_c2 = a.effect) != null ? _c2 : "")
+        ].filter(Boolean).join(" \u2014 ")
+      };
+    }),
+    abilities: ((_g = json.abilities) != null ? _g : []).map((a) => {
+      var _a2, _b2;
+      return {
+        name: String((_a2 = a.name) != null ? _a2 : "Ability"),
+        desc: String((_b2 = a.effect) != null ? _b2 : "")
+      };
+    })
   };
 }
 async function searchYgo(query) {
@@ -114,7 +164,7 @@ async function searchYgo(query) {
   if (!json.data)
     return [];
   return json.data.slice(0, 20).map((c) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
     const images = c.card_images;
     const sets = c.card_sets;
     return {
@@ -123,7 +173,11 @@ async function searchYgo(query) {
       imageSmall: (_e = (_d = images == null ? void 0 : images[0]) == null ? void 0 : _d.image_url_small) != null ? _e : "",
       imageLarge: (_i = (_h = (_f = images == null ? void 0 : images[0]) == null ? void 0 : _f.image_url) != null ? _h : (_g = images == null ? void 0 : images[0]) == null ? void 0 : _g.image_url_small) != null ? _i : "",
       game: "ygo",
-      detail: `${(_j = c.type) != null ? _j : ""} \u2014 ${(_k = c.race) != null ? _k : ""}`
+      detail: `${(_j = c.type) != null ? _j : ""} \u2014 ${(_k = c.race) != null ? _k : ""}`,
+      typeLine: `${(_l = c.type) != null ? _l : ""} \u2014 ${(_m = c.race) != null ? _m : ""}`,
+      rulesText: String((_n = c.desc) != null ? _n : ""),
+      health: typeof c.def === "number" ? c.def : void 0,
+      powerText: typeof c.atk === "number" ? `ATK ${c.atk}` : void 0
     };
   });
 }
@@ -139,7 +193,7 @@ async function searchPokeapi(query) {
   return pokemonListCache.filter((name) => name.includes(q)).slice(0, 20).map((name) => ({ name: capitalize(name), detail: name }));
 }
 async function fetchPokeapiDetail(name) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
   const res = await (0, import_obsidian.requestUrl)({ url: `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}` });
   const json = res.json;
   const other = (_b = (_a = json.sprites) == null ? void 0 : _a.other) != null ? _b : {};
@@ -153,7 +207,18 @@ async function fetchPokeapiDetail(name) {
       return (_b2 = (_a2 = t.type) == null ? void 0 : _a2.name) != null ? _b2 : "";
     }).filter(Boolean),
     height: (_i = json.height) != null ? _i : 0,
-    weight: (_j = json.weight) != null ? _j : 0
+    weight: (_j = json.weight) != null ? _j : 0,
+    hp: (_l = ((_k = json.stats) != null ? _k : []).find((s) => {
+      var _a2;
+      return ((_a2 = s.stat) == null ? void 0 : _a2.name) === "hp";
+    })) == null ? void 0 : _l.base_stat,
+    abilities: ((_m = json.abilities) != null ? _m : []).map((a) => {
+      var _a2, _b2, _c2;
+      return {
+        name: capitalize(String((_b2 = (_a2 = a.ability) == null ? void 0 : _a2.name) != null ? _b2 : "")),
+        hidden: (_c2 = a.is_hidden) != null ? _c2 : false
+      };
+    }).filter((a) => a.name !== "")
   };
 }
 var GAME_TITLES = {
@@ -392,16 +457,18 @@ var TcgCardImporterPlugin = class extends import_obsidian.Plugin {
     return imagePath;
   }
   async importCard(card) {
+    var _a, _b, _c, _d;
     const gameFolder = GAME_FOLDERS[card.game];
     const safeName = sanitizeFileName(card.name);
     const { cardsFolder } = this.settings;
     let setName = card.set;
     let imageLarge = card.imageLarge;
+    let ptcgFull;
     if (card.game === "ptcg" && card.tcgdexId) {
-      const full = await fetchTcgdexCard(card.tcgdexId);
-      setName = full.setName;
-      if (full.image)
-        imageLarge = `${full.image}/high.png`;
+      ptcgFull = await fetchTcgdexCard(card.tcgdexId);
+      setName = ptcgFull.setName;
+      if (ptcgFull.image)
+        imageLarge = `${ptcgFull.image}/high.png`;
     }
     const imagePath = await this.saveImageAndToken(
       card.name,
@@ -409,6 +476,27 @@ var TcgCardImporterPlugin = class extends import_obsidian.Plugin {
       gameFolder,
       `${card.game}-${safeName}`
     );
+    let fenceHealth = card.health;
+    let fenceTraits = [];
+    if (card.game === "mtg" || card.game === "ygo") {
+      if (card.typeLine || card.rulesText) {
+        fenceTraits.push({ name: (_a = card.typeLine) != null ? _a : "Card", desc: (_b = card.rulesText) != null ? _b : "" });
+      }
+      if (card.powerText) {
+        fenceTraits.push({
+          name: card.game === "mtg" ? "Power / Toughness" : "Attack",
+          desc: card.powerText
+        });
+      }
+    } else if (ptcgFull) {
+      fenceHealth = ptcgFull.hp;
+      fenceTraits = [
+        ...(_c = ptcgFull.attacks) != null ? _c : [],
+        ...(_d = ptcgFull.abilities) != null ? _d : [],
+        ...ptcgFull.types && ptcgFull.types.length > 0 ? [{ name: "Types", desc: ptcgFull.types.join(", ") }] : []
+      ];
+    }
+    const fence = statblockFence(card.name, fenceHealth, fenceTraits);
     await ensureFolder(this.app, `${cardsFolder}/${gameFolder}`);
     const notePath = `${cardsFolder}/${gameFolder}/${safeName}.md`;
     const noteBody = `---
@@ -424,6 +512,10 @@ image: "[[${imagePath}]]"
 - **Game:** ${GAME_LABELS[card.game]}
 - **Set:** ${setName}
 - **Detail:** ${card.detail}
+
+## Statblock
+
+${fence}
 `;
     if (!this.app.vault.getAbstractFileByPath(notePath)) {
       await this.app.vault.create(notePath, noteBody);
@@ -442,6 +534,17 @@ image: "[[${imagePath}]]"
     await ensureFolder(this.app, creatureFolder);
     const safeName = sanitizeFileName(detail.name);
     const notePath = `${creatureFolder}/${safeName}.md`;
+    const fenceTraits = [];
+    if (detail.types.length > 0) {
+      fenceTraits.push({ name: "Types", desc: detail.types.join(", ") });
+    }
+    if (detail.abilities && detail.abilities.length > 0) {
+      fenceTraits.push({
+        name: "Abilities",
+        desc: detail.abilities.map((a) => a.hidden ? `${a.name} (Hidden)` : a.name).join(", ")
+      });
+    }
+    const fence = statblockFence(detail.name, detail.hp, fenceTraits);
     const noteBody = `---
 game: pokemon-creature
 types: [${detail.types.join(", ")}]
@@ -456,6 +559,10 @@ image: "[[${imagePath}]]"
 - **Height:** ${detail.height} dm
 - **Weight:** ${detail.weight} hg
 - **Source:** Pok\xE9API
+
+## Statblock
+
+${fence}
 `;
     if (!this.app.vault.getAbstractFileByPath(notePath)) {
       await this.app.vault.create(notePath, noteBody);
