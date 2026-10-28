@@ -1,7 +1,10 @@
-# TCG Card Importer (v0.2 prototype)
+# TCG Card Importer (v0.3)
 
 Obsidian plugin for the Writ & Reckoning vault. Search cards and creatures,
-import each as: a saved image, a reference note, and a real Atlas token JSON.
+import each as: a saved image, a reference note, a real Atlas token JSON,
+and a `statblock` fence in the note — so the import lands as a potential
+statblock (Fantasy Statblocks picks it up, and it renders under the Writ &
+Reckoning layout) as well as a token Atlas can use.
 
 ## Sources (all key-free)
 
@@ -13,7 +16,22 @@ import each as: a saved image, a reference note, and a real Atlas token JSON.
 | Pokémon creatures | PokéAPI (pokeapi.co) | Import Pokémon creature (PokéAPI) |
 
 Cards land as image + note in `Cards/<Game>/` + token. Creatures land as
-artwork/sprite + note in `Characters/Pokemon/` + token.
+artwork/sprite + note in `Characters/Pokemon/` + token. Every note also
+carries a `statblock` fence under a `## Statblock` heading, using only
+WR-layout fields (name, health, traits) so it renders with no layout line:
+
+| Import | Health | Traits |
+|---|---|---|
+| Magic card | Toughness (creatures) | Type line + rules text, Power/Toughness |
+| Pokémon card | HP | Attacks (cost, damage, effect), abilities, types |
+| Yu-Gi-Oh! card | DEF | Type + race + card text, ATK |
+| Pokémon creature | Base HP | Types, abilities (hidden marked) |
+
+WR stats (Command, Imagination, etc.) are not on foreign cards, so those
+rows stay hidden until you fill them in — the fence is a starting
+statblock, not a finished WR character sheet. The Atlas side is unchanged:
+the token JSON + image already land in `atlas-vtt/` per the verified schema,
+which is what Atlas's token creator works from.
 
 ## Token schema — verified
 
@@ -73,12 +91,12 @@ result → Import.
 ## Status: what works, what is untested
 
 - **Works (code-complete):** all four search clients, image download, note
-  creation, token writing in the verified Atlas schema, settings tab.
+  creation, statblock fence in every note, token writing in the verified Atlas schema, settings tab.
 - **Untested:** the plugin has not been run inside Obsidian yet — no live
   import has been done, no token has been placed on a map, and the four APIs
   have not been exercised from the plugin runtime (only their docs were
   checked). First live test should be one cheap import per source, then
-  opening the token in Atlas.
+  opening the token in Atlas and the note's statblock in Reading view.
 - **Known gaps:** Lorcana (see above); MTG art-crop / `layout:token` /
   type-search options from the earlier exploration are not in this build;
   general TTRPG token-pack indexing is not in this build.
