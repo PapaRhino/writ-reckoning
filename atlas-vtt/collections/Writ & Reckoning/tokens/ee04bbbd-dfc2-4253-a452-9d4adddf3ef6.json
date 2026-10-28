@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Kess Varro",
+    "imagePath": "atlas-vtt/assets/Kess_Varro_1793201820002_1n5v4x.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "npc",
+      "rival"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "ee04bbbd-dfc2-4253-a452-9d4adddf3ef6",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}
