@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Writ & Reckoning Lore Builder</title>
+  <style>
+    body { background: #1a1a1a; color: #eee; font-family: sans-serif; padding: 2em; max-width: 900px; margin: auto; }
+    h1, h2, h3 { color: #ffcb05; }
+    label { display: block; margin-top: 1em; font-weight: bold; }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.25em;
+      border: none;
+      background: #2a2a2a;
+      color: #fff;
+    }
+    textarea { height: 8em; resize: vertical; }
+    .section { margin-top: 2em; }
+    .insert-button {
+      margin-top: 0.5em;
+      display: flex;
+      gap: 0.5em;
+    }
+    button {
+      padding: 0.5em 1em;
+      background: #444;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #666; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>🌀 Writ & Reckoning Lore Builder</h1>
+
+  <!-- Step 1: Core Concepts -->
+  <div id="step1" class="section">
+    <h2>Step 1: Define Core Concepts</h2>
+
+    <label>Name for the high power of Chaos</label>
+    <input type="text" id="ChaosPower" placeholder="Chaos">
+
+    <label>Name for the high power of Nature</label>
+    <input type="text" id="NaturePower" placeholder="Sora">
+
+    <label>Name for the high power of Entropy and Time</label>
+    <input type="text" id="EntropyPower" placeholder="Karn">
+
+    <label>Name for the high power of Order</label>
+    <input type="text" id="OrderPower" placeholder="Virel">
+
+    <label>Name for the original authority over creation</label>
+    <input type="text" id="Warden" placeholder="The Warden">
+
+    <label>Name for the crystalized source of possibility</label>
+    <input type="text" id="Geode" placeholder="The Geode of Possibility">
+
+    <label>Name for magical objects (e.g. cards, shards)</label>
+    <input type="text" id="Forms" placeholder="Forms">
+
+    <label>Name for containers of magic (e.g. items, spirits)</label>
+    <input type="text" id="Vessels" placeholder="Vessels">
+
+    <label>Name for physical manifestations of magic buildup</label>
+    <input type="text" id="Soulrocks" placeholder="Soulrocks">
+
+    <button onclick="saveConcepts()">💾 Save & Continue to Lore</button>
+  </div>
+
+  <!-- Step 2: Lore Writing -->
+  <div id="step2" class="section hidden">
+    <h2>Step 2: Write and Customize Your Lore</h2>
+
+    <label>Creation Myth</label>
+    <textarea id="creationLore">
+In the age before variance, The Warden kept reality carefully ordered within the Geode of Possibility, a crystalline star that held every outcome. Chaos shattered this order, stealing fragments that would become the first Forms.
+    </textarea>
+    <div class="insert-button">
+      <select id="creationInsert"><option value="">Insert Object...</option></select>
+      <button onclick="insertObject('creationLore', 'creationInsert')">Add Object</button>
+    </div>
+
+    <label>Nature of Magic</label>
+    <textarea id="magicLore">
+Magic flows through Vessels, which channel Forms into the world. As power builds, Soulrocks emerge from the body — solid echoes of emotional communion with the Powers.
+    </textarea>
+    <div class="insert-button">
+      <select id="magicInsert"><option value="">Insert Object...</option></select>
+      <button onclick="insertObject('magicLore', 'magicInsert')">Add Object</button>
+    </div>
+
+    <label>Rebellion of the Powers</label>
+    <textarea id="rebellionLore">
+When Chaos first rebelled, it was Sora who followed, then Karn, and finally Virel. Together they defied The Warden, scattering Forms into mortal hands.
+    </textarea>
+    <div class="insert-button">
+      <select id="rebellionInsert"><option value="">Insert Object...</option></select>
+      <button onclick="insertObject('rebellionLore', 'rebellionInsert')">Add Object</button>
+    </div>
+
+    <button onclick="goBack()">← Back to Concepts</button>
+    <button onclick="downloadPDF()">📄 Export as PDF</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const objectMap = {
+      ChaosPower: "Chaos",
+      NaturePower: "Sora",
+      EntropyPower: "Karn",
+      OrderPower: "Virel",
+      Warden: "The Warden",
+      Geode: "the Geode of Possibility",
+      Forms: "Forms",
+      Vessels: "Vessels",
+      Soulrocks: "Soulrocks"
+    };
+
+    let currentNames = { ...objectMap };
+
+    function saveConcepts() {
+      Object.keys(objectMap).forEach(key => {
+        const value = document.getElementById(key).value.trim() || objectMap[key];
+        currentNames[key] = value;
+        localStorage.setItem(`writ_${key}`, value);
+      });
+      document.getElementById('step1').classList.add('hidden');
+      document.getElementById('step2').classList.remove('hidden');
+    }
+
+    function loadConcepts() {
+      Object.keys(objectMap).forEach(key => {
+        const stored = localStorage.getItem(`writ_${key}`);
+        const value = stored || objectMap[key];
+        currentNames[key] = value;
+        const input = document.getElementById(key);
+        if (input) input.value = stored || "";
+      });
+    }
+
+    function goBack() {
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+    }
+
+    function applyObjects(text) {
+      Object.keys(objectMap).forEach(key => {
+        const defaultTerm = objectMap[key];
+        const userTerm = currentNames[key];
+        const regex = new RegExp("\\b" + escapeRegExp(defaultTerm) + "\\b", "g");
+        text = text.replace(regex, userTerm);
+      });
+      return text;
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function insertObject(textareaId, selectId) {
+      const select = document.getElementById(selectId);
+      const tag = select.value;
+      if (!tag) return;
+      const textarea = document.getElementById(textareaId);
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const before = textarea.value.substring(0, start);
+      const after = textarea.value.substring(end);
+      textarea.value = before + objectMap[tag] + after;
+      textarea.focus();
+      textarea.setSelectionRange(start + objectMap[tag].length, start + objectMap[tag].length);
+    }
+
+    function populateDropdowns() {
+      const options = Object.keys(objectMap)
+        .map(key => `<option value="${key}">${objectMap[key]}</option>`)
+        .join("");
+      ["creationInsert", "magicInsert", "rebellionInsert"].forEach(id => {
+        document.getElementById(id).innerHTML += options;
+      });
+    }
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const sections = [
+        ["Creation Myth", document.getElementById("creationLore").value],
+        ["Nature of Magic", document.getElementById("magicLore").value],
+        ["Rebellion of the Powers", document.getElementById("rebellionLore").value]
+      ];
+
+      let y = 10;
+      doc.setFont("Times", "Normal");
+
+      sections.forEach(([title, raw]) => {
+        const text = applyObjects(raw);
+        doc.setFontSize(14);
+        doc.text(title, 10, y);
+        y += 8;
+
+        doc.setFontSize(11);
+        const lines = doc.splitTextToSize(text, 180);
+        doc.text(lines, 10, y);
+        y += lines.length * 6 + 10;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+
+      doc.save("custom-lore.pdf");
+    }
+
+    populateDropdowns();
+    loadConcepts();
+  </script>
+</body>
+</html>
