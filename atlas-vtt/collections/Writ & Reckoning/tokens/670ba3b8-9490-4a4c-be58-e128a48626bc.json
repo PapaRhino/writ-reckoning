@@ -1,0 +1,19 @@
+{
+  "atlasRecord": {
+    "format": 1,
+    "name": "Alba Ferrer",
+    "imagePath": "atlas-vtt/assets/Alba_Ferrer_1793201820002_q52nv6.png",
+    "collection": "Writ & Reckoning",
+    "tags": [
+      "writ-reckoning",
+      "the-crater-call",
+      "pc",
+      "leader"
+    ],
+    "showRing": true,
+    "type": "token",
+    "id": "670ba3b8-9490-4a4c-be58-e128a48626bc",
+    "createdAt": 1793201820002,
+    "modifiedAt": 1793201820002
+  }
+}
