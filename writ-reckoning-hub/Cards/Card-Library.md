@@ -14,7 +14,7 @@ See `Plugins/TCG-Card-Importer-Concept.md` for the full write-up. Short version:
 
 ### Pokémon TCG
 
-- (none imported yet)
+- Forms lists for The Crater Call (per character, with WR tier conversions): [[Alba-Forms]], [[Tomas-Forms]], [[Luz-Forms]], [[Willa-Forms]], [[Jory-Forms]], [[Wren-Forms]], [[Rowan-Forms]], [[Corvin-Forms]], [[Kess-Forms]], [[Severo-Forms]], [[Vicente-Forms]]
 
 ### Magic: The Gathering
 
