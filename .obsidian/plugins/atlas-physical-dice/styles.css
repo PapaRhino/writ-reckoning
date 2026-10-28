@@ -1,0 +1,597 @@
+.dice-roller-view {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: var(--background-primary);
+}
+
+.dice-header h2 {
+    text-align: center;
+    margin: 0;
+    color: var(--text-normal);
+}
+
+.dice-container-large {
+    position: relative;
+    width: 600px;
+    height: 450px;
+    border: 2px solid var(--background-modifier-border);
+    border-radius: 8px;
+    background: var(--background-secondary);
+    overflow: hidden;
+}
+
+.dice-container-large canvas {
+    border-radius: 6px;
+    display: block;
+}
+
+.dice-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Overlay itself is click-through */
+    z-index: 10;
+}
+
+.dice-controls-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    pointer-events: auto; /* Buttons are clickable */
+}
+
+.dice-result-overlay {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+    pointer-events: auto;
+}
+
+.dice-result-overlay.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    background: var(--background-secondary);
+    color: var(--text-normal);
+    border: 2px solid var(--interactive-accent);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.dice-result-overlay.show:hover {
+    background: var(--background-modifier-hover);
+    border-color: var(--interactive-accent-hover);
+}
+
+.dice-result-overlay.error {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    background: var(--background-modifier-error);
+    color: var(--text-error);
+    border: 2px solid var(--text-error);
+}
+
+.dice-roll-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dice-roll-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Floating overlay styles */
+.dice-floating-overlay {
+    position: fixed;
+    pointer-events: none; /* Make overlay click-through */
+    z-index: 999;
+    overflow: visible; /* Allow controls to be dragged anywhere */
+    background: transparent;
+}
+
+.dice-floating-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Container is click-through */
+    background: transparent;
+    overflow: hidden;
+}
+
+/* The dice canvas. Click-through until the pointer is over a die, when the
+   plugin adds .is-over-die; the cursor it sets inline (grab / grabbing). */
+.dice-floating-overlay .dice-floating-container canvas.dice-canvas {
+    pointer-events: none;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    border: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: default;
+}
+
+.dice-floating-overlay .dice-floating-container canvas.dice-canvas.is-over-die {
+    pointer-events: auto;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Controls panel, drawn like Atlas VTT's dice panel (atlas-vtt
+   src/app/react/components/dice/dice-dropdown.scss) so the two read as one
+   tool when the dice roll over a map: Obsidian's surface and radius scale, one
+   8px step for padding and gaps alike, and every control in a corner running
+   concentric with the panel's. The --dice-* values mirror Atlas' tokens.
+   --------------------------------------------------------------------------- */
+
+.dice-controls-panel {
+    --dice-gap: 8px;
+    --dice-border-width: 1.5px;
+    --dice-stroke: color-mix(in oklch, var(--mono-100) 18%, transparent);
+    --dice-stroke-subtle: color-mix(in oklch, var(--mono-100) 10%, transparent);
+    --dice-panel-radius: var(--radius-xl);
+    /* Radius inside the border; a control $gap in from it subtracts the gap. */
+    --dice-panel-inner-radius: calc(var(--dice-panel-radius) - var(--dice-border-width));
+    --dice-inset-radius: max(0px, calc(var(--dice-panel-inner-radius) - var(--dice-gap)));
+    --dice-press: 160ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dice-gap);
+    width: fit-content;
+    padding: var(--dice-gap);
+    background: var(--background-primary);
+    border: var(--dice-border-width) solid var(--dice-stroke);
+    border-radius: var(--dice-panel-radius);
+    corner-shape: var(--corner-shape, round);
+    box-shadow: var(--shadow-l);
+    color: var(--text-normal);
+    font-size: var(--font-ui-small);
+    pointer-events: auto;
+    z-index: 1000;
+    animation: dice-panel-in 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes dice-panel-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Obsidian gives every <button> its own frame and shadow; the panel draws its own. */
+.dice-controls-panel button {
+    margin: 0;
+    box-shadow: none;
+    font-family: var(--font-interface);
+    corner-shape: var(--corner-shape, round);
+    transition: background-color 100ms ease, color 100ms ease, transform var(--dice-press);
+}
+
+.dice-controls-panel button:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.dice-controls-panel button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dice-controls-panel button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.dice-controls-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dice-gap);
+}
+
+.dice-controls-drag-handle {
+    display: flex;
+    align-items: center;
+    gap: var(--dice-gap);
+    flex: 1;
+    min-width: 0;
+    padding-left: var(--dice-gap);
+    color: var(--text-muted);
+    cursor: grab;
+    user-select: none;
+}
+
+.dice-controls-drag-handle.is-dragging {
+    cursor: grabbing;
+}
+
+.dice-controls-drag-handle:hover {
+    color: var(--text-normal);
+}
+
+.dice-controls-grip {
+    display: flex;
+    color: var(--text-faint);
+}
+
+.dice-controls-grip svg {
+    width: 16px;
+    height: 16px;
+}
+
+.dice-controls-title {
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-semibold);
+    color: var(--text-normal);
+}
+
+/* The "x" of every Atlas panel: control height, and the corner that faces the
+   panel's own runs concentric with it. */
+.dice-controls-panel .dice-floating-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--input-height);
+    height: var(--input-height);
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-m);
+    border-top-right-radius: var(--dice-inset-radius);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.dice-controls-panel .dice-floating-close-btn:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+/* ── The tray: Atlas's own dice tray (its classes, from Atlas's styles), as Tabletop's ── */
+
+/* Atlas's tray styles reach in through .atlas-vtt-plugin on the panel; these are only what is the panel's own. */
+.dice-controls-panel .atlas-dice-tray__face { position: relative; }
+.dice-controls-panel .atlas-dice-tray__face .dice-tray-picture { display: block; width: 40px; height: 40px; pointer-events: none; }
+.dice-controls-panel .dice-tray-name { font-size: var(--font-ui-small); font-weight: var(--font-semibold); color: var(--text-muted); }
+.dice-controls-panel .atlas-dice-tray__face.is-at-limit { outline: 1.5px solid var(--text-error); outline-offset: -1.5px; }
+/* A die picked in colours of its own: a stripe of each colour's share under its picture. */
+.dice-controls-panel .atlas-dice-tray__face.has-colours::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 3px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--dice-tray-colours);
+}
+/* A die's colours, laid out as the dice are: each colour a button. */
+.dice-controls-panel .dice-tray-colours { display: flex; flex-direction: column; gap: var(--dice-gap); }
+.dice-controls-panel .atlas-dice-tray__face.dice-tray-colour { background: var(--dice-swatch); }
+.dice-controls-panel .atlas-dice-tray__face.dice-tray-colour.is-pack-colour {
+    background: repeating-linear-gradient(45deg, var(--background-secondary), var(--background-secondary) 4px, var(--background-modifier-border) 4px, var(--background-modifier-border) 8px);
+}
+.dice-controls-panel .atlas-dice-tray__face.dice-tray-colour:hover:not(:disabled) { filter: brightness(1.15); }
+
+/* ── Result and status ────────────────────────────────────────────────────── */
+
+.dice-controls-panel .dice-result-overlay {
+    position: static;
+    transform: none;
+    display: none;
+    min-height: 0;
+    padding: var(--dice-gap);
+    background: var(--background-secondary);
+    border: 1px solid var(--dice-stroke-subtle);
+    border-radius: var(--radius-m);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-medium);
+    text-align: center;
+    color: var(--text-normal);
+    opacity: 1;
+    overflow-wrap: anywhere;
+}
+
+.dice-controls-panel .dice-result-overlay.show,
+.dice-controls-panel .dice-result-overlay.error {
+    display: block;
+}
+
+.dice-controls-panel .dice-result-overlay.show {
+    cursor: pointer;
+}
+
+.dice-controls-panel .dice-result-overlay.show:hover {
+    background: var(--background-modifier-hover);
+}
+
+.dice-controls-panel .dice-result-overlay.error {
+    background: var(--background-modifier-error);
+    border-color: var(--text-error);
+    color: var(--text-error);
+}
+
+.dice-controls-panel .dice-status-display {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0 var(--dice-gap);
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+    white-space: pre-wrap;
+    scrollbar-width: thin;
+}
+
+.dice-controls-panel .dice-status-display:empty {
+    display: none;
+}
+
+.dice-controls-panel .dice-reroll-button {
+    width: 100%;
+    height: var(--input-height);
+    padding: 0 12px;
+    background: color-mix(in oklch, var(--color-orange) 18%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-orange) 50%, transparent);
+    border-radius: var(--radius-m);
+    color: var(--color-orange);
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+}
+
+.dice-controls-panel .dice-reroll-button:hover {
+    background: color-mix(in oklch, var(--color-orange) 28%, transparent);
+}
+
+/* Sections of the harness pop-outs, which share the panel's frame. */
+.dice-controls-panel .dice-section {
+    padding-top: var(--dice-gap);
+    border-top: 1px solid var(--dice-stroke-subtle);
+}
+
+/* Shown in place of the canvas when WebGL is unavailable. */
+.dice-render-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 4px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Settings: collapsible sections */
+.dice-settings-header {
+    cursor: pointer;
+    padding: var(--size-4-2) var(--size-4-3);
+    margin-bottom: var(--size-4-2);
+    background: var(--background-modifier-hover);
+    border-radius: var(--radius-s);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dice-settings-title {
+    font-weight: var(--font-semibold);
+    font-size: var(--font-ui-medium);
+}
+
+.dice-settings-arrow {
+    transition: transform 0.2s;
+}
+
+.dice-settings-section.is-collapsed .dice-settings-arrow {
+    transform: rotate(-90deg);
+}
+
+.dice-settings-section.is-collapsed .dice-settings-content {
+    display: none;
+}
+
+.dice-settings-note {
+    font-size: var(--font-ui-smaller);
+    margin-top: var(--size-4-1);
+}
+
+/* ---- Atlas VTT: the hidden engine that draws pack previews ---- */
+
+.dice-preview-engine {
+    position: fixed;
+    left: -10000px;
+    top: 0;
+    width: 64px;
+    height: 64px;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* ---- Atlas VTT: Dice packs tab in the asset manager ---- */
+
+.apd-dice-packs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-4-3);
+}
+
+.apd-dice-packs__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-4-2);
+    flex-wrap: wrap;
+}
+
+.apd-dice-packs__title {
+    margin: 0;
+    font-size: var(--font-ui-large);
+}
+
+.apd-dice-packs__actions {
+    display: flex;
+    gap: var(--size-4-2);
+}
+
+.apd-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-4-1);
+}
+
+.apd-button svg {
+    width: var(--icon-s);
+    height: var(--icon-s);
+}
+
+.apd-hint {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--font-ui-small);
+}
+
+.apd-dice-packs__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--size-4-3);
+}
+
+.apd-dice-pack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-4-2);
+    padding: var(--size-4-3);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-m);
+    background: var(--background-secondary);
+}
+
+.apd-dice-pack.is-active {
+    border-color: var(--interactive-accent);
+}
+
+.apd-dice-pack__preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    color: var(--text-faint);
+}
+
+.apd-dice-pack__preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.apd-dice-pack__preview svg {
+    width: 40%;
+    height: 40%;
+}
+
+.apd-dice-pack__name {
+    font-weight: var(--font-semibold);
+}
+
+.apd-dice-pack__meta {
+    color: var(--text-muted);
+    font-size: var(--font-ui-smaller);
+}
+
+.apd-dice-pack__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--size-4-2);
+    flex-wrap: wrap;
+}
+
+.apd-dice-pack__in-use {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-4-1);
+    color: var(--text-accent);
+    font-size: var(--font-ui-small);
+}
+
+.apd-dice-pack__in-use svg {
+    width: var(--icon-s);
+    height: var(--icon-s);
+}
+
+.apd-dice-packs__reset {
+    grid-column: 1 / -1;
+}
+
+/* ---- Atlas VTT: Dice tab in a collection's settings ---- */
+
+.apd-collection-dice {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-4-2);
+}
+
+.apd-field-label {
+    font-weight: var(--font-semibold);
+}
+
+.apd-colour-row {
+    display: flex;
+    align-items: center;
+    gap: var(--size-4-2);
+}
+
+.apd-colour-swatch {
+    width: 36px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.apd-colour-name {
+    flex: 1;
+    min-width: 0;
+}
+
+.apd-colour-add {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-4-1);
+}
+
+.apd-colour-add svg {
+    width: var(--icon-s);
+    height: var(--icon-s);
+}

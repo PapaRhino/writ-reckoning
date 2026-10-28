@@ -1,0 +1,44 @@
+{
+  "tabHeaderBottom": true,
+  "tabHeaderRightAlign": true,
+  "splitTabHeader": false,
+  "roomySidebar": true,
+  "showTreeLines": false,
+  "defaultLeftSidebarTabs": false,
+  "zenNewTab": true,
+  "atlasPin": true,
+  "dailyNoteButton": true,
+  "showFilesTab": true,
+  "showSearchTab": true,
+  "showNewTab": true,
+  "showTabList": true,
+  "showSidebarToggle": true,
+  "showFileNavHeader": true,
+  "showRootTabBar": false,
+  "showRibbon": false,
+  "showViewHeader": true,
+  "showTrafficLights": false,
+  "showStatusBar": false,
+  "showVaultName": false,
+  "showScrollbars": false,
+  "showTooltips": true,
+  "highlightActiveLine": true,
+  "showPropertiesReading": false,
+  "scrollOffsetEnabled": true,
+  "scrollOffsetPercentage": true,
+  "scrollOffsetValue": "25",
+  "showSearchSuggestions": false,
+  "showSearchCounts": true,
+  "showModalInstructions": true,
+  "tabs": {
+    "essentials": [],
+    "spaces": [
+      {
+        "id": "mvrg5vghu0dxq0",
+        "name": "Home",
+        "icon": "castle",
+        "pinned": []
+      }
+    ]
+  }
+}

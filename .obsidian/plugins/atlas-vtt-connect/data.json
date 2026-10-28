@@ -1,0 +1,26 @@
+{
+  "online": {
+    "signaling": {
+      "mode": "cloud",
+      "host": "",
+      "port": 443,
+      "path": "/",
+      "key": "peerjs",
+      "secure": true
+    },
+    "turnServers": [],
+    "playerPageUrl": "https://evoljoaobento.github.io/atlas-vtt-connect/",
+    "logEvents": false,
+    "playerName": "",
+    "rememberPlayerName": true,
+    "keepImages": true,
+    "shareableProperties": [
+      "tags",
+      "aliases"
+    ]
+  },
+  "forkSteps": [
+    "settings",
+    "sharing"
+  ]
+}
