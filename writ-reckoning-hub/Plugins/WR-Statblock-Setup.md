@@ -21,7 +21,19 @@ Prerequisite: Fantasy Statblocks installed and enabled
 (Settings → Community Plugins → Browse → "Fantasy Statblocks" → Install →
 Enable).
 
-## Step 2 — Build the layout (once)
+## Step 2 — Import the layout (once, preferred)
+
+Import `Plugins/writ-and-reckoning-layout.json` in Settings →
+Fantasy Statblocks → Layouts, via the JSON import option. That creates the
+"Writ & Reckoning Layout" exactly as specified below — no block-by-block
+building. Then set it as the **Default Layout** in the same Layouts
+section: the character sheets carry no `layout:` line, so the default is
+what makes them render (keeping the `layout:` line out is deliberate —
+one setting covers every sheet).
+
+If your install has no layout import option, build it manually instead:
+
+## Step 2 (manual fallback) — Build the layout (once)
 
 1. Open Settings → Community Plugins → Fantasy Statblocks → Layouts.
 2. Click **New Layout**. (Or copy an existing layout and click Edit — the
@@ -117,10 +129,10 @@ with `monster: Demo Character` in another statblock and override individual fiel
 
 ## What does NOT work — honestly
 
-- **There is no preset file, import button, or template folder for layouts.**
-  The docs' only layout-sharing routes are a GitHub discussion and a pull
-  request adding a layout to the plugin's own code. This setup's "preset" is
-  therefore a build spec + a copy-paste codeblock, not an installable file.
+- **The `.md` template file alone installs nothing.** The installable file
+  is `writ-and-reckoning-layout.json`, imported through the plugin's Layouts
+  settings. Copying the `.md` into your vault only gives you a reference to
+  copy from.
 - **Do not hand-edit plugin settings JSON** to inject a layout. Layouts live
   in plugin settings, not in a vault file, and their JSON schema is not
   documented. A bad edit risks corrupting your Fantasy Statblocks settings.
