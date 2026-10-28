@@ -1,16 +1,17 @@
 # Writ & Reckoning — Fantasy Statblocks Template
 
-> **Read this first: this is NOT a plugin preset file, and dropping it into
-> your vault does not install anything in Fantasy Statblocks.**
+> **Import first: `writ-and-reckoning-layout.json` (in this same folder)
+> is the installable layout.** Import it in Settings → Fantasy Statblocks
+> → Layouts via the JSON import option, and the "Writ & Reckoning Layout"
+> appears without building it block by block. Its schema was verified
+> against the plugin's own layout types and its built-in Fate Core layout
+> (block `type` / `id` / `properties` / `conditioned`, group `nested`,
+> traits `heading`, property `display` labels). After importing, set it as
+> the Default Layout (see [[WR-Statblock-Setup]]) — the character sheets
+> carry no `layout:` line, so the default is what makes them render.
 >
-> Fantasy Statblocks has **no file-based preset mechanism**. Its own docs say
-> custom layouts are created *in Settings* ("New layouts are created through
-> settings, either by clicking the 'New Layout' button or copying an existing
-> layout and clicking the 'Edit' button"), and that layouts are shared via a
-> GitHub discussion or added to the plugin itself by pull request — not by
-> placing a file in a vault. The Settings page lists an "Import Creatures"
-> option, but no "Import Layout" option. So there is no `.md` or `.json` file
-> that can install a "Writ & Reckoning" layout for you.
+> If your install has no layout import option, fall back to the manual
+> build spec below — same blocks, same order.
 >
 > What this file *is*:
 >
@@ -137,13 +138,11 @@ it would add modifier parentheses to WR's flat attribute values is
 
 ## What does NOT work
 
-- **No preset file to install.** There is no documented vault file, template
-  folder, or import button for layouts. Anyone telling you to "drop this file
-  in to install the WR preset" is describing something the plugin does not
-  document. Do not hand-edit
-  `<vault>/.obsidian/plugins/obsidian-5e-statblocks/data.json` to fake one —
-  the layout JSON schema is not documented, and a bad edit can corrupt your
-  plugin settings.
+- **Do not hand-edit plugin settings JSON to install the layout.** Use
+  the `writ-and-reckoning-layout.json` import instead. Hand-editing
+  `<vault>/.obsidian/plugins/obsidian-5e-statblocks/data.json` by hand can
+  corrupt your Fantasy Statblocks settings; the import path writes the same
+  object through the plugin's own code.
 - **No D&D-field mapping is needed, and forcing one would mislabel things.**
   `ac` would render as Armor Class, `hp` as Hit Points, `stats` as the six
   D&D abilities. WR uses its own keys above instead.
